@@ -567,14 +567,12 @@ with st.sidebar:
     st.markdown("**TAXAVK — Beespoke Tax Advisors**")
     st.markdown("---")
 
-    # AI access — key is loaded directly from Streamlit Secrets, no password gate
-    st.markdown("#### 🤖 AI Features")
+    # Load API key silently from Streamlit Secrets
     if "ANTHROPIC_API_KEY" in st.secrets:
         os.environ["ANTHROPIC_API_KEY"] = st.secrets["ANTHROPIC_API_KEY"]
         st.success("✅ AI features enabled")
     else:
         os.environ.pop("ANTHROPIC_API_KEY", None)
-        st.info("ℹ️ AI features are unavailable — ANTHROPIC_API_KEY is not configured in Streamlit Secrets.")
 
     st.markdown("---")
 
@@ -827,8 +825,7 @@ with tab2:
     if st.button("🤖 Generate DTAA Advisory", type="primary", key="gen_advisory"):
         if not adv_details.strip():
             st.warning("Please describe the transaction details.")
-        elif not os.getenv("ANTHROPIC_API_KEY"):
-            st.warning("🔑 AI Advisory is unavailable — ANTHROPIC_API_KEY is not configured. Contact your administrator.")
+
         else:
             income_map = {
                 "Royalty / Software Licence": "royalty",
@@ -1025,8 +1022,7 @@ with tab4:
     if st.button("📝 Draft Notice Reply", type="primary", key="draft_notice"):
         if not n_facts.strip():
             st.warning("Please describe the facts of the case.")
-        elif not os.getenv("ANTHROPIC_API_KEY"):
-            st.warning("🔑 This feature is unavailable — ANTHROPIC_API_KEY is not configured. Contact your administrator.")
+
         else:
             with st.spinner("Drafting formal reply (30-40 seconds)..."):
                 try:
@@ -1076,11 +1072,8 @@ with tab5:
                 )
 
             if st.button("🔍 Search Treaty", key="search_treaty"):
-                if not os.getenv("ANTHROPIC_API_KEY"):
-                    st.warning("🔑 Treaty Search AI is unavailable — ANTHROPIC_API_KEY is not configured. Contact your administrator.")
-                else:
-                    selected_path = treaties_path / selected_pdf
-                    with st.spinner("Reading PDF and finding relevant sections..."):
+                selected_path = treaties_path / selected_pdf
+                with st.spinner("Reading PDF and finding relevant sections..."):
                         try:
                             from treaty_reader import (extract_text_from_pdf,
                                                         find_relevant_sections)
@@ -1306,47 +1299,45 @@ with tab7:
     """, unsafe_allow_html=True)
     st.caption("Generate Form 146 CA Certificate draft. CA to review, certify with DSC and upload on TRACES.")
 
-    if not os.getenv("ANTHROPIC_API_KEY"):
-        st.warning("🔑 Form 146 Draft Generator is unavailable — ANTHROPIC_API_KEY is not configured. Contact your administrator.")
-    else:
-        col1, col2 = st.columns(2)
-        with col1:
-            f146_remitter = st.text_input("Remitter Name", placeholder="e.g. TechSoft Pvt Ltd", key="f146_rem")
-            f146_remitter_pan = st.text_input("Remitter PAN", placeholder="e.g. AAACT1234A", key="f146_rpan")
-            f146_payee = st.text_input("Payee Name (NR)", placeholder="e.g. DataCorp LLC", key="f146_pay")
-            f146_country = st.selectbox("Country", [
-                "USA", "UK", "UAE", "Singapore", "Mauritius", "Germany",
-                "Japan", "Canada", "Australia", "Netherlands", "France",
-                "Switzerland", "Hong Kong", "Malaysia", "China", "New Zealand"
-            ], key="f146_cty")
-            f146_nature = st.selectbox("Nature of Payment", [
-                "Royalty / Software Licence",
-                "Fees for Technical Services (FTS)",
-                "Dividend", "Interest", "Capital Gains", "Business Profits"
-            ], key="f146_nat")
 
-        with col2:
-            f146_amount = st.number_input("Amount (Rs. Lakhs)", min_value=0.0, step=0.5, key="f146_amt")
-            f146_dtaa_article = st.text_input("Applicable DTAA Article", placeholder="e.g. Article 12", key="f146_art")
-            f146_dtaa_rate = st.number_input("DTAA Rate (%)", min_value=0.0, max_value=40.0, step=0.5, key="f146_rate")
-            f146_domestic_rate = st.number_input("Domestic Rate (%)", min_value=0.0, max_value=40.0, step=0.5, value=10.0, key="f146_dom")
-            f146_applicable_rate = st.number_input("Applicable Rate (Lower of above) (%)", min_value=0.0, max_value=40.0, step=0.5, key="f146_app")
-            f146_trc = st.selectbox("TRC Status", ["Obtained and Verified", "Not Obtained"], key="f146_trc")
-            f146_form41 = st.selectbox("Form 41 Status", ["Obtained and Verified", "Not Obtained"], key="f146_f41")
+    col1, col2 = st.columns(2)
+    with col1:
+        f146_remitter = st.text_input("Remitter Name", placeholder="e.g. TechSoft Pvt Ltd", key="f146_rem")
+        f146_remitter_pan = st.text_input("Remitter PAN", placeholder="e.g. AAACT1234A", key="f146_rpan")
+        f146_payee = st.text_input("Payee Name (NR)", placeholder="e.g. DataCorp LLC", key="f146_pay")
+        f146_country = st.selectbox("Country", [
+            "USA", "UK", "UAE", "Singapore", "Mauritius", "Germany",
+            "Japan", "Canada", "Australia", "Netherlands", "France",
+            "Switzerland", "Hong Kong", "Malaysia", "China", "New Zealand"
+        ], key="f146_cty")
+        f146_nature = st.selectbox("Nature of Payment", [
+            "Royalty / Software Licence",
+            "Fees for Technical Services (FTS)",
+            "Dividend", "Interest", "Capital Gains", "Business Profits"
+        ], key="f146_nat")
 
-        f146_ca_name = st.text_input("CA Name", placeholder="e.g. TAXAVK — Beespoke Tax Advisors", key="f146_ca")
-        f146_ca_memno = st.text_input("CA Membership Number", placeholder="e.g. 078991", key="f146_mem")
-        f146_ca_firm = st.text_input("CA Firm Name", placeholder="e.g. TAXAVK — Beespoke Tax Advisors", key="f146_firm")
-        f146_remarks = st.text_area("CA Remarks / Qualifications", height=80,
+    with col2:
+        f146_amount = st.number_input("Amount (Rs. Lakhs)", min_value=0.0, step=0.5, key="f146_amt")
+        f146_dtaa_article = st.text_input("Applicable DTAA Article", placeholder="e.g. Article 12", key="f146_art")
+        f146_dtaa_rate = st.number_input("DTAA Rate (%)", min_value=0.0, max_value=40.0, step=0.5, key="f146_rate")
+        f146_domestic_rate = st.number_input("Domestic Rate (%)", min_value=0.0, max_value=40.0, step=0.5, value=10.0, key="f146_dom")
+        f146_applicable_rate = st.number_input("Applicable Rate (Lower of above) (%)", min_value=0.0, max_value=40.0, step=0.5, key="f146_app")
+        f146_trc = st.selectbox("TRC Status", ["Obtained and Verified", "Not Obtained"], key="f146_trc")
+        f146_form41 = st.selectbox("Form 41 Status", ["Obtained and Verified", "Not Obtained"], key="f146_f41")
+
+    f146_ca_name = st.text_input("CA Name", placeholder="e.g. TAXAVK — Beespoke Tax Advisors", key="f146_ca")
+    f146_ca_memno = st.text_input("CA Membership Number", placeholder="e.g. 078991", key="f146_mem")
+    f146_ca_firm = st.text_input("CA Firm Name", placeholder="e.g. TAXAVK — Beespoke Tax Advisors", key="f146_firm")
+    f146_remarks = st.text_area("CA Remarks / Qualifications", height=80,
             placeholder="Any qualifications or conditions...", key="f146_rem2")
 
-        if st.button("🏛️ Generate Form 146 Draft", type="primary", key="gen_f146"):
-            if not f146_remitter or not f146_payee or not f146_ca_name:
-                st.warning("Please fill Remitter, Payee, and CA Name.")
-            else:
-                tds_amount = f146_amount * f146_applicable_rate / 100
+    if st.button("🏛️ Generate Form 146 Draft", type="primary", key="gen_f146"):
+        if not f146_remitter or not f146_payee or not f146_ca_name:
+            st.warning("Please fill Remitter, Payee, and CA Name.")
+        else:
+            tds_amount = f146_amount * f146_applicable_rate / 100
 
-                draft146 = f"""
+            draft146 = f"""
 FORM 146 — DRAFT
 [Under Section 397(3)(d) of Income Tax Act, 2025 read with Rule 220 of Income Tax Rules, 2026]
 [Replaces erstwhile Form 15CB]
@@ -1461,15 +1452,15 @@ responsible for the accuracy of this certificate. Actual filing on
 TRACES portal requires DSC authentication and cannot be automated.
 {'='*70}
 """
-                st.markdown("#### Form 146 Draft")
-                st.text_area("Draft Output", value=draft146, height=500, label_visibility="collapsed")
-                st.download_button(
+            st.markdown("#### Form 146 Draft")
+            st.text_area("Draft Output", value=draft146, height=500, label_visibility="collapsed")
+            st.download_button(
                     "📥 Download Form 146 Draft",
                     data=draft146,
                     file_name=f"Form146_Draft_{f146_remitter[:15]}_{f146_country}.txt",
                     mime="text/plain"
                 )
-                st.warning("⚠️ CA must review, generate UDIN, sign with DSC and upload on TRACES portal.")
+            st.warning("⚠️ CA must review, generate UDIN, sign with DSC and upload on TRACES portal.")
 
 
 # ════════════════════════════════════════════════════════════════════════════
