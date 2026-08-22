@@ -1,6 +1,6 @@
 """
 NR Tax Advisor - Main Streamlit Application
-AI-Powered Non-Resident Tax Advisory Suite for Chartered Accountants
+AI-Powered Double Tax Treaty Advisory Suite for Chartered Accountants
 Built under Income Tax Act, 2025 | Income Tax Rules, 2026
 NR Tax Advisor | AICA Level 2 Capstone 2026
 """
@@ -387,7 +387,7 @@ MODULES_OK = result[0]
 st.markdown("""
 <div class="main-header">
     <h1>🤖 NR TAX ADVISOR</h1>
-    <p>AI-Powered Non-Resident Tax Advisory Suite &nbsp;|&nbsp;
+    <p>AI-Powered Double Tax Treaty Advisory Suite &nbsp;|&nbsp;
        Built under Income Tax Act, 2025 &nbsp;|&nbsp;
        Income Tax Rules, 2026</p>
     <span class="brand-tag">NR TAX ADVISOR</span>
