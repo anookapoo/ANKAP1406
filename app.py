@@ -1,8 +1,8 @@
 """
-DTAA Advisor - Main Streamlit Application
-AI-Powered Double Tax Treaty Advisory Suite for Chartered Accountants
+NR Tax Advisor - Main Streamlit Application
+AI-Powered Non-Resident Tax Advisory Suite for Chartered Accountants
 Built under Income Tax Act, 2025 | Income Tax Rules, 2026
-DTAA Advisor | AICA Level 2 Capstone 2026
+NR Tax Advisor | AICA Level 2 Capstone 2026
 """
 
 import streamlit as st
@@ -13,7 +13,7 @@ from pathlib import Path
 
 # Page configuration
 st.set_page_config(
-    page_title="DTAA Advisor",
+    page_title="NR Tax Advisor",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -386,11 +386,11 @@ MODULES_OK = result[0]
 # ── HEADER ────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="main-header">
-    <h1>🤖 DTAA ADVISOR</h1>
-    <p>AI-Powered Double Tax Treaty Advisory Suite &nbsp;|&nbsp;
+    <h1>🤖 NR TAX ADVISOR</h1>
+    <p>AI-Powered Non-Resident Tax Advisory Suite &nbsp;|&nbsp;
        Built under Income Tax Act, 2025 &nbsp;|&nbsp;
        Income Tax Rules, 2026</p>
-    <span class="brand-tag">DTAA ADVISOR</span>
+    <span class="brand-tag">NR TAX ADVISOR</span>
 </div>
 """, unsafe_allow_html=True)
 
@@ -755,7 +755,7 @@ with tab1:
 # TAB 2 — AI ADVISORY
 # ════════════════════════════════════════════════════════════════════════════
 with tab2:
-    st.markdown("### 📋 AI-Powered DTAA Advisory")
+    st.markdown("### 📋 AI-Powered NR Tax Advisory")
     st.caption("Describe your cross-border transaction. "
                "The AI reads the actual treaty PDF and generates a structured advisory.")
 
@@ -803,7 +803,7 @@ with tab2:
 
     # Demo scenarios
 
-    if st.button("🤖 Generate DTAA Advisory", type="primary", key="gen_advisory"):
+    if st.button("🤖 Generate NR Tax Advisory", type="primary", key="gen_advisory"):
         if not adv_details.strip():
             st.warning("Please describe the transaction details.")
 
@@ -1890,7 +1890,7 @@ with tab9:
 st.markdown("---")
 st.markdown("""
 <div style="text-align:center; color:#6B7570; font-size:0.8rem; font-family:'Share Tech Mono', monospace;">
-🤖 DTAA ADVISOR &nbsp;|&nbsp;
+🤖 NR TAX ADVISOR &nbsp;|&nbsp;
 AICA Level 2 Capstone 2026 &nbsp;|&nbsp;
 Built under Income Tax Act, 2025 | Income Tax Rules, 2026 &nbsp;|&nbsp;
 Form 145 | Form 146 | Form 41 | Section 393<br>
