@@ -2,7 +2,7 @@
 DTAA Advisor - Main Streamlit Application
 AI-Powered Double Tax Treaty Advisory Suite for Chartered Accountants
 Built under Income Tax Act, 2025 | Income Tax Rules, 2026
-TAXAVK — Beespoke Tax Advisors | AICA Level 2 Capstone 2026
+DTAA Advisor | AICA Level 2 Capstone 2026
 """
 
 import streamlit as st
@@ -13,13 +13,13 @@ from pathlib import Path
 
 # Page configuration
 st.set_page_config(
-    page_title="DTAA Advisor | TAXAVK",
+    page_title="DTAA Advisor",
     page_icon="🤖",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
-# Custom CSS — TAXAVK Executive Dark Theme
+# Custom CSS — Executive Dark Theme
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Inter:wght@300;400;500;600&display=swap');
@@ -329,6 +329,13 @@ st.markdown("""
     /* Hide streamlit branding */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
+
+    /* Hide sidebar completely */
+    [data-testid="stSidebar"] { display: none !important; }
+    [data-testid="collapsedControl"] { display: none !important; }
+    .css-1d391kg { display: none !important; }
+    section[data-testid="stSidebar"] { display: none !important; }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -383,14 +390,14 @@ st.markdown("""
     <p>AI-Powered Double Tax Treaty Advisory Suite &nbsp;|&nbsp;
        Built under Income Tax Act, 2025 &nbsp;|&nbsp;
        Income Tax Rules, 2026</p>
-    <span class="brand-tag">TAXAVK — BEESPOKE TAX ADVISORS</span>
+    <span class="brand-tag">DTAA ADVISOR</span>
 </div>
 """, unsafe_allow_html=True)
 
 # ── WORLD CLOCK (self-contained component so the live-updating script runs) ─
 _WORLD_CLOCK_HTML = """
 <div style="font-family:'Inter', sans-serif;">
-<div id="taxavk-world-clock" style="display:flex;flex-wrap:wrap;gap:0.6rem;">
+<div id="world-clock" style="display:flex;flex-wrap:wrap;gap:0.6rem;">
     <div class="wc-card" data-tz="Asia/Kolkata" data-city="India (IST)"></div>
     <div class="wc-card" data-tz="America/New_York" data-city="USA (EST/EDT)"></div>
     <div class="wc-card" data-tz="Europe/London" data-city="UK (GMT/BST)"></div>
@@ -414,7 +421,7 @@ _WORLD_CLOCK_HTML = """
 </style>
 <script>
 (function() {
-    var cards = document.querySelectorAll("#taxavk-world-clock .wc-card");
+    var cards = document.querySelectorAll("#world-clock .wc-card");
     cards.forEach(function(card) {
         var city = card.getAttribute("data-city");
         card.innerHTML = '<div class="wc-city">' + city + '</div>' +
@@ -446,8 +453,8 @@ components.html(_WORLD_CLOCK_HTML, height=110, scrolling=False)
 
 # ── AMBIENT MUSIC PLAYER ──────────────────────────────────────────────────────
 _MUSIC_PLAYER_HTML = """
-<div id="taxavk-audio-bar" style="display:flex;align-items:center;gap:1rem;padding:0.5rem 1.2rem;background:#161B22;border:1px solid rgba(201,168,76,0.18);border-radius:8px;margin:4px 0 2px;font-family:'Orbitron',sans-serif;">
-  <button id="taxavk-amb-btn" onclick="taxavkAmb()"
+<div id="audio-bar" style="display:flex;align-items:center;gap:1rem;padding:0.5rem 1.2rem;background:#161B22;border:1px solid rgba(201,168,76,0.18);border-radius:8px;margin:4px 0 2px;font-family:'Orbitron',sans-serif;">
+  <button id="amb-btn" onclick="playAmb()"
     style="background:linear-gradient(135deg,#C9A84C,#E8C97D);color:#0D1117;border:none;
            border-radius:5px;padding:4px 14px;font-family:'Orbitron',sans-serif;font-weight:800;
            font-size:0.62rem;letter-spacing:1.5px;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
@@ -456,12 +463,12 @@ _MUSIC_PLAYER_HTML = """
   <span style="color:#8B949E;font-family:'Inter',sans-serif;font-size:0.72rem;letter-spacing:0.5px;">
     🎵 Executive Soundscape
   </span>
-  <input type="range" id="taxavk-vol" min="0" max="100" value="25"
-         oninput="taxavkVolume(this.value)"
+  <input type="range" id="vol" min="0" max="100" value="25"
+         oninput="setVolume(this.value)"
          style="accent-color:#C9A84C;width:75px;cursor:pointer;">
-  <span id="taxavk-vol-disp"
+  <span id="vol-disp"
         style="color:#C9A84C;font-size:0.6rem;min-width:30px;font-family:'Orbitron',sans-serif;">25%</span>
-  <span id="taxavk-amb-state"
+  <span id="amb-state"
         style="color:#8B949E;font-size:0.6rem;font-family:'Inter',sans-serif;letter-spacing:0.5px;">READY</span>
 </div>
 <script>
@@ -510,13 +517,13 @@ _MUSIC_PLAYER_HTML = """
     started=true;
   }
 
-  window.taxavkAmb=function(){
-    var btn=document.getElementById('taxavk-amb-btn');
-    var st =document.getElementById('taxavk-amb-state');
+  window.playAmb=function(){
+    var btn=document.getElementById('amb-btn');
+    var st =document.getElementById('amb-state');
     if(!on){
       if(!started) boot();
       else if(actx.state==='suspended') actx.resume();
-      var v=document.getElementById('taxavk-vol').value/100*0.4;
+      var v=document.getElementById('vol').value/100*0.4;
       master.gain.cancelScheduledValues(actx.currentTime);
       master.gain.linearRampToValueAtTime(v, actx.currentTime+2.0);
       btn.textContent='⏸ PAUSE';
@@ -536,8 +543,8 @@ _MUSIC_PLAYER_HTML = """
     }
   };
 
-  window.taxavkVolume=function(v){
-    document.getElementById('taxavk-vol-disp').textContent=v+'%';
+  window.setVolume=function(v){
+    document.getElementById('vol-disp').textContent=v+'%';
     if(actx && on && master){
       master.gain.cancelScheduledValues(actx.currentTime);
       master.gain.linearRampToValueAtTime(v/100*0.4, actx.currentTime+0.15);
@@ -562,40 +569,14 @@ Rule 220(3) exempt list — 33 categories
 
 
 # ── SIDEBAR ───────────────────────────────────────────────────────────────
-with st.sidebar:
-    st.markdown("### 🤖 DTAA Advisor")
-    st.markdown("**TAXAVK — Beespoke Tax Advisors**")
-    st.markdown("---")
+# Load API key silently from Streamlit Secrets
+if "ANTHROPIC_API_KEY" in st.secrets:
+    os.environ["ANTHROPIC_API_KEY"] = st.secrets["ANTHROPIC_API_KEY"]
+else:
+    os.environ.pop("ANTHROPIC_API_KEY", None)
 
-    # Load API key silently from Streamlit Secrets
-    if "ANTHROPIC_API_KEY" in st.secrets:
-        os.environ["ANTHROPIC_API_KEY"] = st.secrets["ANTHROPIC_API_KEY"]
-        st.success("✅ AI features enabled")
-    else:
-        os.environ.pop("ANTHROPIC_API_KEY", None)
-
-    st.markdown("---")
-
-    # Treaties status
-    st.markdown("#### 📂 Treaty Library")
-    treaties_path = Path(__file__).parent / "treaties"
-    if treaties_path.exists():
-        pdfs = list(treaties_path.glob("*.pdf"))
-        st.success(f"✅ {len(pdfs)} treaty PDFs loaded")
-        with st.expander("View loaded treaties"):
-            for pdf in sorted(pdfs):
-                if "afghanistan" not in pdf.name.lower():
-                    st.caption(f"📄 {pdf.name[:50]}")
-    else:
-        st.error("❌ Treaties folder not found")
-        st.caption("Expected: treaties/ folder in project root")
-        st.info("Create treaties/ folder in your repo and add treaty PDFs")
-
-    st.markdown("---")
-    st.markdown("#### ℹ️ About")
-    st.caption("AICA Level 2 Capstone Project")
-    st.caption("May 2026")
-    st.caption("25 Indian DTAAs covered")
+# Treaties path — used across tabs
+treaties_path = Path(__file__).parent / "treaties"
 
 
 # ── STATS ROW ─────────────────────────────────────────────────────────────
@@ -1325,9 +1306,9 @@ with tab7:
         f146_trc = st.selectbox("TRC Status", ["Obtained and Verified", "Not Obtained"], key="f146_trc")
         f146_form41 = st.selectbox("Form 41 Status", ["Obtained and Verified", "Not Obtained"], key="f146_f41")
 
-    f146_ca_name = st.text_input("CA Name", placeholder="e.g. TAXAVK — Beespoke Tax Advisors", key="f146_ca")
+    f146_ca_name = st.text_input("CA Name", placeholder="e.g. CA Vaishali Kapoor", key="f146_ca")
     f146_ca_memno = st.text_input("CA Membership Number", placeholder="e.g. 078991", key="f146_mem")
-    f146_ca_firm = st.text_input("CA Firm Name", placeholder="e.g. TAXAVK — Beespoke Tax Advisors", key="f146_firm")
+    f146_ca_firm = st.text_input("CA Firm Name", placeholder="e.g. Kapoor Kumar & Associates", key="f146_firm")
     f146_remarks = st.text_area("CA Remarks / Qualifications", height=80,
             placeholder="Any qualifications or conditions...", key="f146_rem2")
 
@@ -1498,7 +1479,7 @@ with tab8:
             placeholder="e.g. Article 12 — Royalties", key="f41_art")
         f41_fy = st.text_input("Financial Year", value="2025-26", key="f41_fy")
         f41_remitter = st.text_input("Indian Remitter Name", placeholder="e.g. TechSoft Pvt Ltd", key="f41_rem")
-        f41_ca_name = st.text_input("CA Name (for letter)", placeholder="e.g. TAXAVK — Beespoke Tax Advisors", key="f41_ca")
+        f41_ca_name = st.text_input("CA Name (for letter)", placeholder="e.g. CA Vaishali Kapoor", key="f41_ca")
 
     if st.button("📋 Generate Form 41 Template", type="primary", key="gen_f41"):
         if not f41_payee_name or not f41_remitter:
@@ -1909,7 +1890,7 @@ with tab9:
 st.markdown("---")
 st.markdown("""
 <div style="text-align:center; color:#6B7570; font-size:0.8rem; font-family:'Share Tech Mono', monospace;">
-🤖 DTAA ADVISOR — TAXAVK — BEESPOKE TAX ADVISORS &nbsp;|&nbsp;
+🤖 DTAA ADVISOR &nbsp;|&nbsp;
 AICA Level 2 Capstone 2026 &nbsp;|&nbsp;
 Built under Income Tax Act, 2025 | Income Tax Rules, 2026 &nbsp;|&nbsp;
 Form 145 | Form 146 | Form 41 | Section 393<br>
