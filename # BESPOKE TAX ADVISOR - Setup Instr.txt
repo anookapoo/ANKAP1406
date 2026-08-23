@@ -1,6 +1,5 @@
 # BESPOKE TAX ADVISOR - Setup Instructions
-# TAXAVK | AICA Level 2 Capstone 2026
-
+| AICA Level 2 Capstone 2026
 ## STEP 1 - Create folder structure
 Create these folders on your laptop:
   C:\DTAA\
